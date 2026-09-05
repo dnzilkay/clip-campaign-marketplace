@@ -1,10 +1,24 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 
+import { DomainError } from "@/server/domain/errors";
+
 import type { TRPCContext } from "./context";
 
 const t = initTRPC.context<TRPCContext>().create({
   transformer: superjson,
+  errorFormatter({ error, shape }) {
+    const domainError =
+      error.cause instanceof DomainError ? error.cause : null;
+
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        domainCode: domainError?.code ?? null,
+      },
+    };
+  },
 });
 
 const requireUser = t.middleware(({ ctx, next }) => {

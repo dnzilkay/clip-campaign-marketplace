@@ -16,7 +16,7 @@ const globalForDatabase = globalThis as unknown as {
 export const postgresClient =
   globalForDatabase.postgresClient ??
   postgres(connectionString, {
-    max: process.env.NODE_ENV === "production" ? 10 : 1,
+    max: process.env.NODE_ENV === "test" ? 10 : 5,
   });
 
 if (process.env.NODE_ENV !== "production") {
