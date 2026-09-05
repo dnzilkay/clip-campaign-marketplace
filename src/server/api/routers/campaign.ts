@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { campaigns } from "@/server/db/schema";
 import { getCampaignAdminDetail } from "@/server/domain/campaign-overview";
+import { updateCampaignSafely } from "@/server/domain/campaign-update";
 import {
   campaignFormSchema,
   campaignListInputSchema,
@@ -14,6 +15,7 @@ import {
   createTRPCRouter,
   creatorProcedure,
 } from "../trpc";
+import { toTRPCError } from "../domain-error";
 
 export const campaignRouter = createTRPCRouter({
   listAdmin: adminProcedure
@@ -81,22 +83,15 @@ export const campaignRouter = createTRPCRouter({
   update: adminProcedure
     .input(z.object({ id: z.uuid(), values: campaignFormSchema }))
     .mutation(async ({ ctx, input }) => {
-      const [campaign] = await ctx.db
-        .update(campaigns)
-        .set({
+      try {
+        return await updateCampaignSafely(ctx.db, input.id, {
           ...input.values,
           startsAt: new Date(input.values.startsAt),
           endsAt: new Date(input.values.endsAt),
-          updatedAt: new Date(),
-        })
-        .where(eq(campaigns.id, input.id))
-        .returning();
-
-      if (!campaign) {
-        throw new TRPCError({ code: "NOT_FOUND" });
+        });
+      } catch (error) {
+        throw toTRPCError(error);
       }
-
-      return campaign;
     }),
 
   adminDetail: adminProcedure

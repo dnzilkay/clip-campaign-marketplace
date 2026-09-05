@@ -103,8 +103,10 @@ describe("daily metric ingestion", () => {
     cleanupDates.push(capturedAt);
     const [submissionId] = await createApprovedSubmissions([1_000]);
     let sourceCalls = 0;
-    const source: MetricSource = async ({ previousMetric }) => {
-      sourceCalls += 1;
+    const source: MetricSource = async ({ submission, previousMetric }) => {
+      if (submission.id === submissionId) {
+        sourceCalls += 1;
+      }
       return {
         views: (previousMetric?.views ?? 0) + 500,
         likes: (previousMetric?.likes ?? 0) + 20,
