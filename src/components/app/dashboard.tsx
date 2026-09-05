@@ -59,13 +59,18 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-muted/20">
-      <header className="border-b bg-background">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <div>
-            <p className="font-semibold">Clip Campaigns</p>
-            <p className="text-sm text-muted-foreground">
-              {user.role === "admin" ? "Admin workspace" : "Creator workspace"}
-            </p>
+      <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-foreground text-background">
+              <ShieldCheck className="size-5" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-lg font-semibold leading-tight">Clip Campaigns</p>
+              <p className="text-sm text-muted-foreground">
+                {user.role === "admin" ? "Admin account" : "Creator account"}
+              </p>
+            </div>
           </div>
           <UserSwitcher currentUserId={user.id} compact />
         </div>

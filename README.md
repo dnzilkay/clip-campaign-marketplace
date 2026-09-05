@@ -58,7 +58,7 @@ pnpm db:studio    # Open Drizzle Studio
 - Role and ownership checks run in tRPC middleware and procedures, independent of the UI.
 - Approval freezes the latest-metric payout as a committed amount. PostgreSQL row locks serialize approval and campaign-budget changes.
 - Unique indexes provide the final guard for one normalized post URL per campaign and one metric row per submission per day.
-- All money values are integer cents and all application date boundaries use UTC.
+- All money values are integer cents, displayed explicitly as USD, and all application date boundaries use UTC.
 
 See [NOTES.md](./NOTES.md) for assumptions, concurrency details, deliberate omissions, and AI usage.
 

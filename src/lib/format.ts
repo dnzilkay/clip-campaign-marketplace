@@ -1,5 +1,11 @@
-export function formatCents(cents: number) {
-  return `${cents.toLocaleString("en-US")}¢`;
+export function formatMoney(cents: number) {
+  const amount = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(cents / 100);
+
+  return `${amount} USD`;
 }
 
 export function formatNumber(value: number) {

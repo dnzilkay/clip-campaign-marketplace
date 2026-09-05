@@ -96,7 +96,7 @@ export function SubmissionFormDialog({
               aria-invalid={!!form.formState.errors.postUrl}
               {...form.register("postUrl")}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               Use a public TikTok video, Instagram reel/post, YouTube Short, or youtu.be URL.
             </p>
             {form.formState.errors.postUrl ? <p role="alert" className="text-sm text-destructive">{form.formState.errors.postUrl.message}</p> : null}

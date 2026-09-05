@@ -36,7 +36,7 @@ export function UserSwitcher({
       >
         <SelectTrigger
           aria-label="Switch demo user"
-          className={compact ? "w-56" : "w-full"}
+          className={compact ? "w-64" : "w-full"}
         >
           <SelectValue placeholder="Choose a demo user" />
         </SelectTrigger>

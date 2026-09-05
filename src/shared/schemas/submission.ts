@@ -4,7 +4,9 @@ import { platformSchema } from "./campaign";
 
 export const createSubmissionSchema = z.object({
   campaignId: z.uuid(),
-  postUrl: z.url().max(2_000),
+  postUrl: z
+    .url({ error: "Enter a valid post URL" })
+    .max(2_000, "Post URL is too long"),
   platform: platformSchema,
 });
 

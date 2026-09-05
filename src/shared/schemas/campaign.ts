@@ -10,10 +10,22 @@ export const campaignStatusSchema = z.enum([
 
 export const campaignFormSchema = z
   .object({
-    title: z.string().trim().min(3).max(160),
-    platforms: z.array(platformSchema).min(1),
-    payoutPer1kViews: z.number().int().positive(),
-    totalBudget: z.number().int().positive(),
+    title: z
+      .string()
+      .trim()
+      .min(3, "Title must be at least 3 characters")
+      .max(160, "Title cannot exceed 160 characters"),
+    platforms: z
+      .array(platformSchema)
+      .min(1, "Select at least one platform"),
+    payoutPer1kViews: z
+      .number({ error: "Enter a payout amount" })
+      .int("Payout must use whole cents")
+      .positive("Payout must be greater than zero"),
+    totalBudget: z
+      .number({ error: "Enter a total budget" })
+      .int("Budget must use whole cents")
+      .positive("Budget must be greater than zero"),
     status: campaignStatusSchema,
     startsAt: z.string().refine((value) => !Number.isNaN(Date.parse(value)), {
       message: "Enter a valid start date",

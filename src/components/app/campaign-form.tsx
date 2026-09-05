@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toDateTimeLocal } from "@/lib/format";
+import { formatMoney, toDateTimeLocal } from "@/lib/format";
 import {
   campaignFormSchema,
   type CampaignFormValues,
@@ -70,6 +70,8 @@ export function CampaignFormDialog({
   const updateCampaign = trpc.campaign.update.useMutation({ onSuccess });
   const mutationError = createCampaign.error ?? updateCampaign.error;
   const isPending = createCampaign.isPending || updateCampaign.isPending;
+  const payoutPreview = form.watch("payoutPer1kViews");
+  const budgetPreview = form.watch("totalBudget");
 
   const submit = form.handleSubmit((values) => {
     const normalizedValues = {
@@ -87,12 +89,12 @@ export function CampaignFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{campaign ? "Edit campaign" : "Create campaign"}</DialogTitle>
           <DialogDescription>
-            Amounts are stored as integer cents. All fields are validated again on
-            the server.
+            Define where the campaign runs, how much each 1,000 views earns, and
+            the maximum budget.
           </DialogDescription>
         </DialogHeader>
         <form className="space-y-5" onSubmit={submit} noValidate>
@@ -139,8 +141,13 @@ export function CampaignFormDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
               id="campaign-payout"
-              label="Payout per 1K views (cents)"
+              label="Payout per 1,000 views"
               error={form.formState.errors.payoutPer1kViews?.message}
+              hint={
+                Number.isSafeInteger(payoutPreview) && payoutPreview > 0
+                  ? `${payoutPreview.toLocaleString("en-US")} cents = ${formatMoney(payoutPreview)}`
+                  : "Enter a whole number of USD cents"
+              }
             >
               <Input
                 id="campaign-payout"
@@ -152,8 +159,13 @@ export function CampaignFormDialog({
             </Field>
             <Field
               id="campaign-budget"
-              label="Total budget (cents)"
+              label="Total campaign budget"
               error={form.formState.errors.totalBudget?.message}
+              hint={
+                Number.isSafeInteger(budgetPreview) && budgetPreview > 0
+                  ? `${budgetPreview.toLocaleString("en-US")} cents = ${formatMoney(budgetPreview)}`
+                  : "Enter a whole number of USD cents"
+              }
             >
               <Input
                 id="campaign-budget"
@@ -177,6 +189,7 @@ export function CampaignFormDialog({
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger
                     id="campaign-status"
+                    className="w-full"
                     aria-invalid={!!form.formState.errors.status}
                   >
                     <SelectValue />
@@ -245,17 +258,22 @@ function Field({
   id,
   label,
   error,
+  hint,
   children,
 }: {
   id: string;
   label: string;
   error?: string;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
       {children}
+      {hint && !error ? (
+        <p className="text-sm text-muted-foreground">{hint}</p>
+      ) : null}
       <FieldError message={error} />
     </div>
   );
