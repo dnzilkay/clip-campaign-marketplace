@@ -61,34 +61,28 @@ export const submissionRouter = createTRPCRouter({
         });
       }
 
-      try {
-        const [submission] = await ctx.db
-          .insert(submissions)
-          .values({
-            campaignId: campaign.id,
-            creatorId: ctx.user.id,
-            postUrl: input.postUrl,
-            normalizedPostUrl: parsedUrl.normalizedUrl,
-            platform: input.platform,
-          })
-          .returning();
+      const [submission] = await ctx.db
+        .insert(submissions)
+        .values({
+          campaignId: campaign.id,
+          creatorId: ctx.user.id,
+          postUrl: input.postUrl,
+          normalizedPostUrl: parsedUrl.normalizedUrl,
+          platform: input.platform,
+        })
+        .onConflictDoNothing({
+          target: [submissions.campaignId, submissions.normalizedPostUrl],
+        })
+        .returning();
 
-        return submission;
-      } catch (error) {
-        if (
-          typeof error === "object" &&
-          error !== null &&
-          "code" in error &&
-          error.code === "23505"
-        ) {
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: "This post URL has already been submitted to the campaign",
-          });
-        }
-
-        throw error;
+      if (!submission) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "This post URL has already been submitted to the campaign",
+        });
       }
+
+      return submission;
     }),
 
   listMine: creatorProcedure.query(async ({ ctx }) => {
