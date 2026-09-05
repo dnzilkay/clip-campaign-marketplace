@@ -1,9 +1,11 @@
 import { authRouter } from "./routers/auth";
+import { campaignRouter } from "./routers/campaign";
 import { submissionRouter } from "./routers/submission";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
+  campaign: campaignRouter,
   submission: submissionRouter,
 });
 
