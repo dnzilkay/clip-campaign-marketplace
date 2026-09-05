@@ -1,0 +1,22 @@
+name: clip-campaign-marketplace
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: clip_campaign
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: UTC
+    ports:
+      - "54329:5432"
+    volumes:
+      - clip_campaign_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d clip_campaign"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  clip_campaign_postgres_data:
